@@ -57,10 +57,15 @@ agents = {
     'Body1': [
         {
             'consumed': '''(
+                prev!(timeStep),
+                prev!(position),
                 prev!(velocity),
+                agent!(Body2).position,
+                agent!(Body2).mass,
             )''',
             'produced': '''velocity''',
-            'function': identity,
+            # 'function': identity,
+            'function': propagate_velocity,
         },
         {
             'consumed': '''(
@@ -141,19 +146,25 @@ agents = {
 }
 
 # NOTE: initial values are set here. we intentionally separate the data from the functions operating on it.
+# only used in test.py
 data = {
-    'Body1': {
-        'timeStep': 0.01,
-        'time': 0.0,
-        'position': {'x': -0.73, 'y': 0, 'z': 0},
-        'velocity': {'x': 0, 'y': -0.0015, 'z': 0},
-        'mass': 1
+    'init': {
+        'Body1': {
+            'timeStep': 0.01,
+            'time': 0.0,
+            'position': {'x': -0.73, 'y': 0, 'z': 0},
+            'velocity': {'x': 0, 'y': -0.0015, 'z': 0},
+            'mass': 1
+        },
+        'Body2': {
+            'timeStep': 0.01,
+            'time': 0.0,
+            'position': {'x': 60.34, 'y': 0, 'z': 0},
+            'velocity': {'x': 0, 'y': 0.13 , 'z': 0},
+            'mass': 0.123
+        }
     },
-    'Body2': {
-        'timeStep': 0.01,
-        'time': 0.0,
-        'position': {'x': 60.34, 'y': 0, 'z': 0},
-        'velocity': {'x': 0, 'y': 0.13 , 'z': 0},
-        'mass': 0.123
+    'config': {
+        'numIterations': 500
     }
 }

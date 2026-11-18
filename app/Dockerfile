@@ -17,6 +17,9 @@ WORKDIR /app
 COPY app/requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
+# Install sqlite3
+RUN apt-get update && apt-get install -y sqlite3 libsqlite3-dev
+
 COPY app .
 
 RUN mkdir /queries

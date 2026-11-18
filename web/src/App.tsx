@@ -18,6 +18,7 @@ const App = () => {
   const [positionData, setPositionData] = useState<PlottedAgentData[]>([]);
   const [velocityData, setVelocityData] = useState<PlottedAgentData[]>([]);
   const [initialState, setInitialState] = useState<DataFrame>({});
+  const [numIterations, setNumIterations] = useState('');
 
   useEffect(() => {
     // fetch plot data when the component mounts
@@ -29,14 +30,21 @@ const App = () => {
       try {
         // data should be populated from a POST call to the simulation server
         const response = await fetch('http://localhost:8000/simulation');
-        if (canceled) return;
+        if (canceled || !response.ok) return;
         const data: DataPoint[] = await response.json();
+        if (!data || data.length === 0) {
+          console.error('No data received from the simulation server.');
+          return;
+        }
+        const numIterationsHeader = response.headers.get('Sim-Iterations');
+        setNumIterations(numIterationsHeader ?? '');
+        
         const updatedPositionData: PlottedFrame = {};
         const updatedVelocityData: PlottedFrame = {};
 
         // NOTE: Uncomment to see the raw data in the console
         // console.log('Data:', data);
-
+        
         setInitialState(data[0][2]);
 
         const baseData = () => ({
@@ -146,6 +154,7 @@ const App = () => {
                 <Table.ColumnHeaderCell>Agent</Table.ColumnHeaderCell>
                 <Table.ColumnHeaderCell>Initial Position (x,y, z)</Table.ColumnHeaderCell>
                 <Table.ColumnHeaderCell>Initial Velocity (x,y,z)</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>Timesteps run</Table.ColumnHeaderCell>
               </Table.Row>
             </Table.Header>
 
@@ -161,6 +170,9 @@ const App = () => {
                   </Table.Cell>
                   <Table.Cell>
                     ({velocity.x}, {velocity.y}, {velocity.z})
+                  </Table.Cell>
+                  <Table.Cell>
+                    {numIterations}
                   </Table.Cell>
                 </Table.Row>
                   );} else {

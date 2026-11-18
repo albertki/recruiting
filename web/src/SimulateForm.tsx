@@ -7,6 +7,11 @@ import { Routes } from 'routes';
 
 type FormValue = number | '';
 interface FormData {
+  Config: {
+    // Configure any simulation parameters (e.g. number of iterations)
+    numIterations: FormValue;
+    timestep: FormValue;
+  };
   Body1: {
     position: {
       x: FormValue;
@@ -39,6 +44,7 @@ const SimulateForm: React.FC = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState<FormData>({
+    Config: { numIterations: 500, timestep: 0.01}, // keep default 500 used in simulator.py::simulate()
     Body1: { position: {x: -0.73, y: 0, z: 0}, velocity: {x: 0, y: -0.0015, z: 0}, mass: 1 },
     Body2: { position: {x: 60.34, y: 0, z: 0}, velocity: {x: 0, y: 0.13, z: 0}, mass: 0.0123 },
   });
@@ -94,10 +100,42 @@ const SimulateForm: React.FC = () => {
         <Form onSubmit={handleSubmit}>
           {/* 
             *********************************
-            Body1
+            Sim Config
             *********************************
             */}
           <Heading as="h3" size="3" weight="bold">
+            Sim Configurations
+          </Heading>
+          {/* Number of iterations */}
+          <FormField name="Config.numIterations">
+            <FormLabel htmlFor="Config.numIterations">Iterations</FormLabel>
+            <TextField.Root
+              type="number"
+              id="Config.numIterations"
+              name="Config.numIterations"
+              value={formData.Config.numIterations}
+              onChange={handleChange}
+              // required
+            />
+          </FormField>
+          {/* Timestep size */}
+          <FormField name="Config.timestep">
+            <FormLabel htmlFor="Config.timestep">Timestep</FormLabel>
+            <TextField.Root
+              type="number"
+              id="Config.timestep"
+              name="Config.timestep"
+              value={formData.Config.timestep}
+              onChange={handleChange}
+              // required
+            />
+          </FormField>
+          {/* 
+            *********************************
+            Body1
+            *********************************
+            */}
+          <Heading as="h3" size="3" weight="bold" mt="4">
             Body1
           </Heading>
           {/* Form: https://www.radix-ui.com/primitives/docs/components/form */}
